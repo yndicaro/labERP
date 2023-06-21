@@ -18,7 +18,19 @@ def cadastrar_usuario():
     idade = int(input("Digite a idade do usuário: "))
     setor = input("Digite o setor do usuário: ")
     cpf = input("Digite o CPF do usuário: ")
+    
+    while len(cpf) < 11:
+        print('CPF Invalido!! É necessário 11 digitos.')
+        cpf = input("Digite o CPF do usuário: ")
+    cpf = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])    
+    
     data_inicio = input("Digite a data de início do usuário: ")
+    
+    while len(data_inicio) < 8:
+        print('Data Invalida!! É necessário 8 digitos.')
+        data_inicio = input("Digite a data de início do usuário: ")
+    data_inicio = '{}/{}/{}'.format(data_inicio[:2], data_inicio[2:4], data_inicio[4:8])    
+    
     status = input("Digite o status do usuário (Ativo/Inativo): ").capitalize() == 'Ativo' 
 
 # 'Capitalize' faz com que a primeira letra seja maiuscula (evitando erro no case sentive)
@@ -47,10 +59,11 @@ def cadastrar_produto():
     codigo = len(equipamentos) + 1
     equipamentos[codigo] = equipamento
     print("Equipamento cadastrado com sucesso!")
-
+        
 # Exibir informações do usuario, A pesquisa é feita pelo CPF do usuario.
 def exibir_info_usuario():
     cpf = input("Digite o CPF do usuário que deseja exibir as informações: ")
+    cpf = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])    
     if cpf in usuarios:
         usuario = usuarios[cpf]
         print("Informações do Usuário:")
@@ -147,40 +160,82 @@ def gerenciar_equipamentos():
 # Menu. Libera a base para conseguir interagir com o codigo dando as opções abaixo.
 def menu():
     while True:
-        print("===LabERP Menu===")
-        print("1 - Cadastrar Usuário")
-        print("2 - Cadastrar Produto")
-        print("3 - Exibir Informações do Usuário")
-        print("4 - Exibir Equipamentos")
-        print("5 - Editar Usuário")
-        print("6 - Editar Equipamento")
-        print("7 - Gerenciar Usuários")
-        print("8 - Gerenciar Equipamentos")
-        print("9 - Sair")
+        print("=== LabERP Menu ===")
+        print("1 - Menu de Cadastros")
+        print("2 - Menu de Gerenciamentos")
+        print("3 - Menu de Edições")
+        print("4 - Sair")
 
         opcao = int(input("Digite a opção desejada: "))
 
         if opcao == 1:
-            cadastrar_usuario()
+            menu_cadastrar()
         elif opcao == 2:
-            cadastrar_produto()
+            menu_editar() 
         elif opcao == 3:
-            exibir_info_usuario()
+            menu_exibir()
         elif opcao == 4:
-            exibir_equipamentos()
-        elif opcao == 5:
-            editar_info_usuario()
-        elif opcao == 6:
-            editar_info_equipamento()
-        elif opcao == 7:
-            gerenciar_usuarios()
-        elif opcao == 8:
-            gerenciar_equipamentos()
-        elif opcao == 9:
             break
         else:
             print("Opção inválida!")
 
         print("\n")
 
+def menu_cadastrar():
+    print("=== LabERP Cadastros ===")
+    print("1 - Cadastrar Usuário")
+    print("2 - Cadastrar Produto")
+    print("3 - Retornar ao Menu")
+        
+    opcao = int(input("Digite a opção desejada: "))
+
+    if opcao == 1:
+        cadastrar_usuario()
+    elif opcao == 2:
+        cadastrar_produto()
+    elif opcao == 3:
+        menu()
+    else:
+        print("Opção inválida!")
+        
+def menu_editar():
+    print("=== LabERP Edições ===")
+    print("1 - Editar Usuário")
+    print("2 - Editar Equipamento")
+    print("3 - Retornar ao Menu")
+
+    opcao = int(input("Digite a opção desejada: "))
+    
+    if opcao == 1:
+        editar_info_usuario()
+    elif opcao == 2:
+        editar_info_equipamento()
+    elif opcao == 3:
+        menu()
+    else:
+        print("Opção inválida!")
+    
+def menu_exibir():
+    print("=== LabERP Gerenciamentos ===")
+    print("1 - Exibir Informações do Usuário")
+    print("2 - Exibir Equipamentos")
+    print("3 - Gerenciar Usuários")
+    print("4 - Gerenciar Equipamentos")
+    print("5 - Retornar ao Menu")
+    
+    opcao = int(input("Digite a opção desejada: "))
+    
+    if opcao == 1:
+        exibir_info_usuario()
+    elif opcao == 2:
+        exibir_equipamentos()
+    elif opcao == 3:
+        gerenciar_usuarios()
+    elif opcao == 4:
+        gerenciar_equipamentos()
+    elif opcao == 5:
+        menu()
+    else:
+        print("Opção inválida!")
+        
 menu()
