@@ -114,11 +114,11 @@ def exibir_equipamentos():
 # Editar informações do Usuario, Pesquisa pelo CPF do usuário e é possível modificar Nome, Idade, Setor, Data do início e Status.
 def editar_info_usuario():
     cpf = input("Digite o CPF do usuário que deseja editar: ")
-    if cpf in usuarios:
-        usuario = usuarios[cpf]
+    cpf_formatado = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])
+    if cpf_formatado in usuarios:
+        usuario = usuarios[cpf_formatado]
         print("Digite as novas informações do usuário (deixe em branco para manter o valor atual):")
         usuario.nome = input(f"Nome ({usuario.nome}): ") or usuario.nome
-        usuario.idade = int(input(f"Idade ({usuario.idade}): ")) or usuario.idade
         usuario.setor = input(f"Setor ({usuario.setor}): ") or usuario.setor
         usuario.data_inicio = input(f"Data de Início ({usuario.data_inicio}): ") or usuario.data_inicio
         status = input(f"Status ({'Ativo' if usuario.status else 'Inativo'}): ")
