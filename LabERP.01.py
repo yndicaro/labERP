@@ -19,7 +19,11 @@ def cadastrar_usuario():
     while len(cpf) != 11:
         print('CPF Inválido! É necessário ter 11 dígitos.')
         cpf = input("Digite o CPF do usuário: ")
-    
+        
+    if not cpf.isdigit():
+        print("CPF inválido! O CPF deve conter apenas dígitos numéricos.")
+        cpf = input("Digite o CPF do usuário: ")
+        
     data_inicio = input("Digite a data de início do usuário: ")
     
     while len(data_inicio) != 8 or not data_inicio.isdigit():
@@ -300,9 +304,7 @@ def menu_exibir():
         else:
             print("Opção inválida!")
 
-
 # Menu de Edições, principal parte onde vai encaminhar para o que vai ser editado.
-
 
 def menu_editar():
     while True:
