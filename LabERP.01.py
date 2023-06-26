@@ -16,24 +16,37 @@ def cadastrar_usuario():
     setor = input("Digite o setor do usuário: ")
     cpf = input("Digite o CPF do usuário: ")
     
-    while len(cpf) < 11:
-        print('CPF Inválido!! É necessário 11 dígitos.')
+    while len(cpf) != 11:
+        print('CPF Inválido! É necessário ter 11 dígitos.')
         cpf = input("Digite o CPF do usuário: ")
-    cpf = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])
+    
     data_inicio = input("Digite a data de início do usuário: ")
     
-    while len(data_inicio) < 8:
-        print('Data Inválida!! É necessário 8 dígitos.')
-        data_inicio = input("Digite a data de início do usuário: ")
-    data_inicio = '{}/{}/{}'.format(data_inicio[:2], data_inicio[2:4], data_inicio[4:8])
+    while len(data_inicio) != 8 or not data_inicio.isdigit():
+        print('Data Inválida! É necessário ter 8 dígitos numéricos (DDMMAAAA).')
+        data_inicio = input("Digite a data de início do usuário (DDMMAAAA): ")
+    
+    # Formatação da Data de inicio.
+    
+    data_inicio = '{}/{}/{}'.format(data_inicio[:2], data_inicio[2:4], data_inicio[4:])
+ 
     status = input("Digite o status do usuário (Ativo/Inativo): ").capitalize() == 'Ativo'
+    
+    # Atribuindo as variáveis às propriedades da classe Usuario
+    usuario = Usuario(nome, idade, setor, cpf, data_inicio, status)
+    usuarios[cpf] = usuario
+    
+    print("Usuário cadastrado com sucesso!")
+    
     # 'Capitalize' faz com que a primeira letra seja maiúscula (evitando erro no case sensitive)
     # Atribuindo as variáveis até as classes.
+    
     usuario = Usuario(nome, idade, setor, cpf, data_inicio, status)
     usuarios[cpf] = usuario
     print("Usuário cadastrado com sucesso!")
 
 # Cadastro de equipamento.
+
 def cadastrar_produto():
     nome = input("Digite o nome do equipamento: ")
     tamanho = input("Digite o tamanho do equipamento: ")
@@ -48,11 +61,16 @@ def cadastrar_produto():
     equipamentos[codigo] = equipamento
     print("Equipamento cadastrado com sucesso!")
 
-# Exibir informações do usuário, A pesquisa é feita pelo CPF do usuário.
+# Buscar usuário, A pesquisa é feita pelo CPF do usuário.
+
 def buscar_usuario():
     opcao = input("Digite '1' para buscar por CPF, '2' para buscar por Data de Início, "
-                  "'3' para buscar pelo Primeiro Nome ou '4' para buscar por Atividade: ")
+              "'3' para buscar pelo Primeiro Nome, '4' para buscar por Atividade "
+              "ou '5' para exibir todos os usuários cadastrados: ")
     if opcao == '1':
+        
+        # Busca atraves do CPF do usuario.
+        
         cpf = input("Digite o CPF do usuário que deseja buscar: ")
         cpf_formatado = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])
         if cpf_formatado in usuarios:
@@ -61,19 +79,48 @@ def buscar_usuario():
         else:
             print("Usuário não encontrado.")
     elif opcao == '2':
+        
+        # Busca atraves da data de Inicio.
+        
         data_inicio = input("Digite a data de início do usuário que deseja buscar (DD/MM/AAAA): ")
         data_inicio = '{}/{}/{}'.format(data_inicio[:2], data_inicio[2:4], data_inicio[4:])
+        
+        # Feita a formatação novamente para evitar o erro quando fazer a busca.
+        
         usuarios_encontrados = [usuario for usuario in usuarios.values() if usuario.data_inicio == data_inicio]
         exibir_usuarios_encontrados(usuarios_encontrados)
     elif opcao == '3':
+        
+        # Busca pelo Nome
+        
         primeiro_nome = input("Digite o primeiro nome do usuário que deseja buscar: ")
         usuarios_encontrados = [usuario for usuario in usuarios.values() if usuario.nome.startswith(primeiro_nome)]
+        
+        # Starswitch pega a primeira parte do nome do usuario.
+        
         exibir_usuarios_encontrados(usuarios_encontrados)
     elif opcao == '4':
+        
+        # Busca pela atividade
+        
         atividade = input("Digite a atividade do usuário que deseja buscar (Ativo ou Inativo): ")
         atividade = atividade.capitalize()
         usuarios_encontrados = [usuario for usuario in usuarios.values() if (atividade == 'Ativo' and usuario.status) or (atividade == 'Inativo' and not usuario.status)]
         exibir_usuarios_encontrados(usuarios_encontrados)
+    elif opcao == '5':
+        if usuarios:
+            print("Usuários cadastrados:")
+            for cpf, usuario in usuarios.items():
+                print("CPF:", cpf)
+                print("Nome:", usuario.nome)
+                print("Idade:", usuario.idade)
+                print("Setor:", usuario.setor)
+                print("Data de Início:", usuario.data_inicio)
+                print("Status:", "Ativo" if usuario.status else "Inativo")
+                print()
+            else:
+                print("Não há mais usuários cadastrados.")
+        buscar_usuario()
     else:
         print("Opção inválida!")
 
@@ -99,6 +146,7 @@ def exibir_usuarios_encontrados(usuarios_encontrados):
         print("Nenhum usuário encontrado.")
 
 # Exibe todos os equipamentos.
+
 def exibir_equipamentos():
     if equipamentos:
         print("Equipamentos cadastrados:")
@@ -112,9 +160,13 @@ def exibir_equipamentos():
         print("Não há equipamentos cadastrados.")
 
 # Editar informações do Usuario, Pesquisa pelo CPF do usuário e é possível modificar Nome, Idade, Setor, Data do início e Status.
+
 def editar_info_usuario():
     cpf = input("Digite o CPF do usuário que deseja editar: ")
     cpf_formatado = '{}.{}.{}-{}'.format(cpf[:3], cpf[3:6], cpf[6:9], cpf[9:])
+    
+    # Feito a formatação novamente quando digitado para evitar o erro durante a busca.
+    
     if cpf_formatado in usuarios:
         usuario = usuarios[cpf_formatado]
         print("Digite as novas informações do usuário (deixe em branco para manter o valor atual):")
@@ -156,6 +208,9 @@ def gerenciar_usuarios():
             # Obtém o nome completo do usuário a partir do CPF
             if confirmar_exclusao(nome_completo):
                 del usuarios[cpf]
+                
+# Remove o usuario com base no CPF q foi cadastrado, Usado CPF para evitar erros de nomes parecidos.
+                
                 print("Usuário removido com sucesso!")
             else:
                 print("Exclusão cancelada.")
@@ -172,12 +227,17 @@ def gerenciar_equipamentos():
     elif opcao == '2':
         codigo = int(input("Digite o código do equipamento que deseja remover: "))
         if codigo in equipamentos:
+            
+            # faz confirmação se possui o codigo cadastrado na tabela de Equipamentos.
+            
             del equipamentos[codigo]
             print("Equipamento removido com sucesso!")
         else:
             print("Equipamento não encontrado.")
     else:
         print("Opção inválida!")
+
+#Menu Principal onde vai começar o codigo, aqui leva a qualquer outra parte do codigo sendo a função de cadastrar, gerenciar ou editar 
 
 def menu():
     while True:
@@ -198,6 +258,8 @@ def menu():
         else:
             print("Opção inválida!")
 
+# Menu cadastrar, uma das partes principais do codigo, serve para levar a tela de cadastro do Equipamento ou do usuario
+
 def menu_cadastrar():
     while True:
         print("=== Menu de Cadastros ===")
@@ -213,6 +275,8 @@ def menu_cadastrar():
             break
         else:
             print("Opção inválida!")
+
+#Menu de Exbição, parte do codigo que designada para Buscar ou Exibir equipamentos ou Usuarios cadastrados.
 
 def menu_exibir():
     while True:
@@ -235,6 +299,10 @@ def menu_exibir():
             break
         else:
             print("Opção inválida!")
+
+
+# Menu de Edições, principal parte onde vai encaminhar para o que vai ser editado.
+
 
 def menu_editar():
     while True:
